@@ -10,4 +10,7 @@ trait Day {
 object Day {
   def part1: RIO[Day, Unit] =
     ZIO.serviceWithZIO(_.part1)
+
+  def part2: RIO[Day, Unit] =
+    ZIO.serviceWithZIO(_.part2)
 }
