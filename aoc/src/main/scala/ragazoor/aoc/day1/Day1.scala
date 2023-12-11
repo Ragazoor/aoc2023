@@ -37,8 +37,10 @@ case class Day1(inputRepo: InputRepo) extends Day:
       val lastNumIdx = getNumIdx(line)(_.toCharArray.lastIndexWhere(_.isDigit))
       val firstNumStr = getStringNums(line.indexOf).headOption
       val lastNumStr = getStringNums(line.lastIndexOf).lastOption
-      val firstNum = getFirstStr(firstNumIdx, firstNumStr)
-      val lastNum = getLastStr(lastNumIdx, lastNumStr)
+      def firstCompare(a: (Index, String),b: (Index, String)) = if (a._1 < b._1) a._2 else b._2
+      val firstNum = getStr(firstNumIdx, firstNumStr)(firstCompare)
+      def lastCompare(a: (Index, String),b: (Index, String)) = if (a._1 > b._1) a._2 else b._2
+      val lastNum = getStr(lastNumIdx, lastNumStr)(lastCompare)
       (firstNum + lastNum).toInt
     }.sum
 
@@ -46,18 +48,12 @@ case class Day1(inputRepo: InputRepo) extends Day:
     val firstNumIdx = getIdx(line)
     if (firstNumIdx != -1) Some((firstNumIdx, line(firstNumIdx).toString)) else None
 
-  private def getFirstStr(digit: Option[(Index, String)], string: Option[(Index, String)]): String =
+  private def getStr(digit: Option[(Index, String)], string: Option[(Index, String)])
+                        (compare: ((Index, String), (Index, String)) => String): String =
     (digit, string) match
       case (Some((_, digit)), None) => digit
       case (None, Some((_, digit))) => digit
-      case (Some((idxA, a)), Some((idxB, b))) => if (idxA < idxB) a else b
-      case (None, None) => throw new RuntimeException("Found neither string nor digit in line")
-
-  private def getLastStr(digit: Option[(Index, String)], string: Option[(Index, String)]): String =
-    (digit, string) match
-      case (Some((_, digit)), None) => digit
-      case (None, Some((_, digit))) => digit
-      case (Some((idxA, a)), Some((idxB, b))) => if (idxA > idxB) a else b
+      case (Some(a), Some(b)) => compare(a, b)
       case (None, None) => throw new RuntimeException("Found neither string nor digit in line")
 
   private def getStringNums(getIdx: String => Int): Seq[(Index, String)] =
