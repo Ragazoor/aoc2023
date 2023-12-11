@@ -1,7 +1,10 @@
 package ragazoor.aoc.day1
 
 import zio.*
-import scala.util.Try
 
 trait InputRepo:
-    def getPart1: Try[Seq[String]]
+    def getPart1: Task[Seq[String]]
+
+object InputRepo:
+    def getPart1: RIO[InputRepo, Seq[String]] =
+        ZIO.serviceWithZIO(_.getPart1)

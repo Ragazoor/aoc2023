@@ -2,15 +2,13 @@ package ragazoor.aoc.day1
 
 import zio.*
 
-import scala.util.Using
-import scala.io.Source
 import java.nio.file.Path
-import scala.util.Try
+import scala.io.Source
+import scala.util.{Try, Using}
 
-object InputRepoImpl
-    extends InputRepo:
-    def getPart1: Try[Seq[String]] = 
-        Using(openInputFile("part1"))(file2Lines)
+case class InputRepoImpl() extends InputRepo:
+    def getPart1: Task[Seq[String]] =
+        ZIO.fromTry(Using(openInputFile("part1"))(file2Lines))
 
     private def openInputFile(fileName: String): Source = 
         val inputPath = Path.of(s"/$fileName.txt")
@@ -22,3 +20,7 @@ object InputRepoImpl
 
     private def file2Lines(userSource: Source): Seq[String] = 
         userSource.getLines.toSeq
+
+object InputRepoImpl:
+    val layer: ULayer[InputRepoImpl] =
+        ZLayer.succeed(InputRepoImpl())
