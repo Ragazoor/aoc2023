@@ -48,6 +48,15 @@ object Day1Test extends ZIOSpecDefault {
       result.provide(
         Day1.layer,
         inputRepo)
+    },
+    test("Test day 1") {
+       for {
+        _ <- Day1Main.run
+        output <- TestConsole.output
+      } yield assertTrue(
+         output.head == "54708\n",
+         output.last == "54087\n"
+       )
     }
   )
 }
