@@ -14,4 +14,5 @@ object Day1Main extends ZIOAppDefault:
   private def program: RIO[Day, Unit] =
     for {
       _ <- Day.part1
+      _ <- Day.part2
     } yield ()

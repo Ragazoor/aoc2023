@@ -33,14 +33,18 @@ case class Day1(inputRepo: InputRepo) extends Day:
 
   private def getPart2(input: Seq[String]): Int =
     input.map { line =>
-      val firstNumIdx = getFirstNumIdx(line)
-      val lastNumIdx = getLastNumIdx(line)
-      val firstNumStr = getFirstStringNums(line)
-      val lastNumStr = getLastStringNums(line)
+      val firstNumIdx = getNumIdx(line)(_.toCharArray.indexWhere(_.isDigit))
+      val lastNumIdx = getNumIdx(line)(_.toCharArray.lastIndexWhere(_.isDigit))
+      val firstNumStr = getStringNums(line.indexOf).headOption
+      val lastNumStr = getStringNums(line.lastIndexOf).lastOption
       val firstNum = getFirstStr(firstNumIdx, firstNumStr)
       val lastNum = getLastStr(lastNumIdx, lastNumStr)
       (firstNum + lastNum).toInt
     }.sum
+
+  private def getNumIdx(line: String)(getIdx: String => Index): Option[(Index, String)] =
+    val firstNumIdx = getIdx(line)
+    if (firstNumIdx != -1) Some((firstNumIdx, line(firstNumIdx).toString)) else None
 
   private def getFirstStr(digit: Option[(Index, String)], string: Option[(Index, String)]): String =
     (digit, string) match
@@ -49,18 +53,6 @@ case class Day1(inputRepo: InputRepo) extends Day:
       case (Some((idxA, a)), Some((idxB, b))) => if (idxA < idxB) a else b
       case (None, None) => throw new RuntimeException("Found neither string nor digit in line")
 
-  private def getFirstNumIdx(line: String): Option[(Index, String)] =
-    val firstNumIdx = line.toCharArray.indexWhere(_.isDigit)
-    if (firstNumIdx != -1) Some((firstNumIdx, line(firstNumIdx).toString)) else None
-
-  private def getFirstStringNums(line: String): Option[(Index, String)] =
-    numbers.flatMap(num =>
-      val idx = line.indexOf(num)
-      if (idx != -1) Some((idx, num)) else None
-    ).sortBy((idx, _) => idx)
-      .headOption
-      .map((idx, num) => (idx, string2Number(num).toString))
-
   private def getLastStr(digit: Option[(Index, String)], string: Option[(Index, String)]): String =
     (digit, string) match
       case (Some((_, digit)), None) => digit
@@ -68,16 +60,11 @@ case class Day1(inputRepo: InputRepo) extends Day:
       case (Some((idxA, a)), Some((idxB, b))) => if (idxA > idxB) a else b
       case (None, None) => throw new RuntimeException("Found neither string nor digit in line")
 
-  private def getLastNumIdx(line: String): Option[(Index, String)] =
-    val lastNumIdx = line.toCharArray.lastIndexWhere(_.isDigit)
-    if (lastNumIdx != -1) Some((lastNumIdx, line(lastNumIdx).toString)) else None
-
-  private def getLastStringNums(line: String): Option[(Index, String)] =
+  private def getStringNums(getIdx: String => Int): Seq[(Index, String)] =
     numbers.flatMap(num =>
-      val idx = line.lastIndexOf(num)
+      val idx = getIdx(num)
       if (idx != -1) Some((idx, num)) else None
     ).sortBy((idx, _) => idx)
-      .lastOption
       .map((idx, num) => (idx, string2Number(num).toString))
 
 object Day1:
