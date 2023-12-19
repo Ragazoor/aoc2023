@@ -2,11 +2,6 @@ module Day1
 
 open System
 
-let getLines filePath =
-  System.IO.File.ReadAllLines(filePath)
-  |> Seq.toList
-
-let input = getLines "src/AoC2023/Day1/input.txt"
 let removeLetters str = str |> String.filter System.Char.IsDigit
 
 let calibrationValue (str: string) =
@@ -16,7 +11,7 @@ let calibrationValue (str: string) =
 
 let getCalibrationValue1 input = input |> removeLetters |> calibrationValue
 
-let part1 =
+let part1 input =
   (input |> List.sumBy getCalibrationValue1)
 
 
