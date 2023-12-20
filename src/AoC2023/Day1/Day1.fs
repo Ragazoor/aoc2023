@@ -18,12 +18,22 @@ module Day1 =
           ("six","6"); ("seven","7"); ("eight","8"); ("nine","9")
       ]
 
+  let getAllIndices (str: string) (key: string) =
+    let rec findIndexLoop (index: int) (indices: int list) =
+      let index = str.IndexOf(key, index)
+      if index >= 0 then
+        findIndexLoop (index + 1) (index :: indices)
+      else
+        indices
+    findIndexLoop 0 []
+
   let private getNumberLine (line: string) =
     let strArray  = Array.create line.Length ""
     for key in lookup.Keys do
-      let index = line.IndexOf(key)
-      if index >= 0 then
-        strArray.[index] <- lookup.[key]
+      let indices = getAllIndices line key
+      if indices.Length >= 0 then
+        for idx in indices do
+        strArray[idx] <- lookup[key]
     let numberLine = strArray |> Array.reduce (+)
     numberLine
 
