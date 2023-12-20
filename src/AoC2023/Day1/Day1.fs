@@ -34,8 +34,7 @@ module Day1 =
       if indices.Length >= 0 then
         for idx in indices do
         strArray[idx] <- lookup[key]
-    let numberLine = strArray |> Array.reduce (+)
-    numberLine
+    strArray |> Array.reduce (+)
 
   let private getCalibrationValue2 input = input |> getNumberLine |> calibrationValue
   let part2 input = input |> List.sumBy getCalibrationValue2
