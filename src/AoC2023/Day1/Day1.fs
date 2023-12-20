@@ -24,7 +24,8 @@ module Day1 =
       let index = line.IndexOf(key)
       if index >= 0 then
         strArray.[index] <- lookup.[key]
-    strArray |> Array.reduce (+)
+    let numberLine = strArray |> Array.reduce (+)
+    numberLine
 
   let private getCalibrationValue2 input = input |> getNumberLine |> calibrationValue
   let part2 input = input |> List.sumBy getCalibrationValue2

@@ -29,6 +29,14 @@ let ``Part 2`` () =
 let ``Part 2 edge cases`` () =
   let input = [
     "avxsevenine";
-    "one"
+    "one";
     ]
   Assert.Equal(90, Day1.part2 input)
+
+
+[<Fact>]
+let ``Part 2 edge cases 2`` () =
+  let input = [
+    "dttwonezbgmcseven5seven";
+    ]
+  Assert.Equal(27, Day1.part2 input)
