@@ -1,4 +1,5 @@
 namespace AoC2023
+open AoC2023.Common
 
 module Day1 =
   let private removeLetters str = str |> String.filter System.Char.IsDigit
@@ -10,7 +11,6 @@ module Day1 =
 
   let private getCalibrationValue1 input = input |> removeLetters |> calibrationValue
 
-  let part1 input = input |> List.sumBy getCalibrationValue1
 
   let private lookup = Map [
           ("1","1"); ("2","2"); ("3","3"); ("4","4"); ("5","5"); ("6","6"); ("7","7"); ("8","8");
@@ -37,7 +37,7 @@ module Day1 =
     strArray |> Array.reduce (+)
 
   let private getCalibrationValue2 input = input |> getNumberLine |> calibrationValue
+  let part1 input = input |> List.sumBy getCalibrationValue1
   let part2 input = input |> List.sumBy getCalibrationValue2
 
-
-
+  let solver = { part1 = part1; part2 = part2}
