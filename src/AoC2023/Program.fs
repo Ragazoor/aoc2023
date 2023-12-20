@@ -1,13 +1,10 @@
-﻿namespace AoC.Y2023
-
-open Day1
-
+﻿namespace AoC2023
 
 
 // For more information see https://aka.ms/fsharp-console-apps
 module Program =
   let private getInput day =
-    let inputPath = $"src/AoC2023/Day%d{day}/input.txt"
+    let inputPath = $"input/AoC2023/Day%d{day}/input.txt"
     System.IO.File.ReadAllLines(inputPath)
     |> Seq.toList
 
