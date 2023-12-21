@@ -20,10 +20,11 @@ module Program =
 
   [<EntryPoint>]
   let main args =
-    for day in 1..1 do
+    for day in 1..2 do
       printfn "Day %d" day
       let input = getInput day
       match day with
       | 1 -> printResult Day1.solver input
+      | 2 -> printResult Day2.solver input
       | _ -> printfn "Not implemented yet"
     0

@@ -12,6 +12,16 @@ module Day2 =
         None
       else
         Some game.id
+  let private getMinCubes' currentMinCube cube =
+    let minRed = max currentMinCube.red cube.red
+    let minGreen = max currentMinCube.green cube.green
+    let minBlue = max currentMinCube.blue cube.blue
+    {red = minRed; green = minGreen; blue = minBlue}
+
+  let private getMinCubes game =
+    game.cubes
+    |> Seq.reduce getMinCubes'
+    |> (fun c -> c.red * c.green * c.blue)
 
   let firstRegex = System.Text.RegularExpressions.Regex(@"Game (\d+):(?:((?:(?: \d+ \w+),)*(?: \d+ \w+))(?:;?))+")
   let secondRegex = System.Text.RegularExpressions.Regex(@"(?: (?:(\d+) (\w+)),?)+")
@@ -33,12 +43,17 @@ module Day2 =
       |> Seq.map parseGroup
     {id = gameNumber; cubes = cubes}
 
-  let private getGameResult (gameStr: string) =
+  let private getGameResult1 (gameStr: string) =
     gameStr
     |> parseGame
     |> getIdIfValidGame
     |> Option.defaultValue 0
 
-  let part1 input = input |> List.sumBy getGameResult
+  let private getGameResult2 (gameStr: string) =
+    gameStr
+    |> parseGame
+    |> getMinCubes
 
-  let solver = { part1 = part1; part2 = part1}
+  let part1 input = input |> List.sumBy getGameResult1
+  let part2 input = input |> List.sumBy getGameResult2
+  let solver = { part1 = part1; part2 = part2}
