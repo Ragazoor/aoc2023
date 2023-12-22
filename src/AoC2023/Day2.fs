@@ -5,13 +5,6 @@ module Day2 =
 
   type private Cubes = {red: int; green: int; blue: int}
   type private Game = {id: int; cubes: Cubes seq}
-  let private isImpossibleGame cube =
-    cube.red > 12 || cube.green > 13 || cube.blue > 14
-  let private getIdIfValidGame game =
-      if Seq.exists isImpossibleGame game.cubes then
-        None
-      else
-        Some game.id
   let firstRegex = System.Text.RegularExpressions.Regex(@"Game (\d+):(?:((?:(?: \d+ \w+),)*(?: \d+ \w+))(?:;?))+")
   let secondRegex = System.Text.RegularExpressions.Regex(@"(?: (?:(\d+) (\w+)),?)+")
   let private parseGroup group =
@@ -32,27 +25,26 @@ module Day2 =
       |> Seq.map parseGroup
     {id = gameNumber; cubes = cubes}
 
-  let private getGameResult1 (gameStr: string) =
-    gameStr
-    |> parseGame
-    |> getIdIfValidGame
-    |> Option.defaultValue 0
-  let private getMinCubes' currentMinCube cube =
+  let private possibleGame cube =
+    cube.red <= 12 && cube.green <= 13 && cube.blue <= 14
+  let part1 input =
+    input
+    |> List.map parseGame
+    |> List.filter (fun g -> Seq.forall possibleGame g.cubes)
+    |> List.sumBy (fun g -> g.id)
+  let private getMaxCubes currentMinCube cube =
     let minRed = max currentMinCube.red cube.red
     let minGreen = max currentMinCube.green cube.green
     let minBlue = max currentMinCube.blue cube.blue
     {red = minRed; green = minGreen; blue = minBlue}
 
-  let private getMinCubes game =
+  let private getCubePower game =
     game.cubes
-    |> Seq.reduce getMinCubes'
+    |> Seq.reduce getMaxCubes
     |> (fun c -> c.red * c.green * c.blue)
 
-  let private getGameResult2 (gameStr: string) =
-    gameStr
-    |> parseGame
-    |> getMinCubes
-
-  let part1 input = input |> List.sumBy getGameResult1
-  let part2 input = input |> List.sumBy getGameResult2
+  let part2 input =
+    input
+    |> List.map parseGame
+    |> List.sumBy getCubePower
   let solver = { part1 = part1; part2 = part2}
