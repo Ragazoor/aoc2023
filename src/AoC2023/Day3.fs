@@ -8,14 +8,12 @@ open System
 module Day3 =
     // If a number spans the coordinates (x,y) to (x+1,y) then the number exists on both keys of the map
     type Numbers = Map<int * int, int>
-    type Symbols = seq<int * int>
+    type Symbols = Map<int * int, string>
 
-    type Schematic =
-        { numbers: Numbers
-          symbols: (int * int) seq }
+    type Schematic = { numbers: Numbers; symbols: Symbols }
 
-    let private numberRegex = System.Text.RegularExpressions.Regex(@"\d+")
-    let private symbolRegex = System.Text.RegularExpressions.Regex(@"[^\d\.]")
+    let private numberRegex = Text.RegularExpressions.Regex(@"\d+")
+    let private symbolRegex = Text.RegularExpressions.Regex(@"[^\d\.]")
 
     let parseSchematic (input: string list) : Schematic =
         input
@@ -31,12 +29,14 @@ module Day3 =
 
             let symbols =
                 symbolRegex.Matches(line)
-                |> Seq.map (fun m -> (m.Index, y))
+                |> Seq.map (fun m -> m.Index, m.Value)
+                |> Seq.map (fun (x, s) -> (x, y), s)
+                |> Map.ofSeq
 
             { numbers = numbers; symbols = symbols })
         |> Seq.reduce (fun acc s ->
             { numbers = Map.fold (fun acc k v -> Map.add k v acc) acc.numbers s.numbers
-              symbols = Seq.append s.symbols acc.symbols })
+              symbols = Map.fold (fun acc k v -> Map.add k v acc) acc.symbols s.symbols })
 
     let private getNeighbourNumbers (numbers: Numbers) (x, y) =
         [ numbers.TryFind(x - 1, y - 1)
@@ -55,9 +55,21 @@ module Day3 =
         input
         |> parseSchematic
         |> fun s ->
-            s.symbols
+            s.symbols.Keys
             |> Seq.map (getNeighbourNumbers s.numbers)
         |> Seq.collect id
         |> Seq.sum
 
-    let solver = { part1 = part1; part2 = part1 }
+    let part2 input =
+        input
+        |> parseSchematic
+        |> fun s ->
+            s.symbols
+            |> Map.filter (fun _ v -> v = "*")
+            |> Map.keys
+            |> Seq.map (getNeighbourNumbers s.numbers)
+            |> Seq.filter (fun n -> n.Length > 1)
+            |> Seq.map (List.reduce (*))
+        |> Seq.sum
+
+    let solver = { part1 = part1; part2 = part2 }

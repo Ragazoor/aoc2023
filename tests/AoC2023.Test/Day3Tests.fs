@@ -28,7 +28,7 @@ let ``Parse Schematic`` () =
         |> Set.ofList
 
     let schematic = Day3.parseSchematic input
-    Assert.True(Set.isSuperset expectedSymbols (Set.ofSeq schematic.symbols))
+    Assert.True(Set.isSuperset expectedSymbols (schematic.symbols.Keys |> Set.ofSeq))
 
     Assert.Equal(467, schematic.numbers[0, 0])
     Assert.Equal(467, schematic.numbers[1, 0])
@@ -56,3 +56,19 @@ let ``Part 1`` () =
           ".664.598.." ]
 
     Assert.Equal(4361, Day3.part1 input)
+
+[<Fact>]
+let ``Part 2`` () =
+    let input =
+        [ "467..114.."
+          "...*......"
+          "..35..633."
+          "......#..."
+          "617*......"
+          ".....+.58."
+          "..592....."
+          "......755."
+          "...$.*...."
+          ".664.598.." ]
+
+    Assert.Equal(467835, Day3.part2 input)
