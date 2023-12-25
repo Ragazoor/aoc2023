@@ -34,7 +34,7 @@ module Day4 =
         input
         |> Seq.map parseCard
         |> Seq.map (fun c -> Set.intersect c.winNumbers c.myNumbers)
-        |> Seq.filter (Set.isEmpty >> not)
+        |> Seq.filter (Set.count >> (<) 0)
         |> Seq.map (fun x -> Math.Pow(2.0, (x.Count - 1) |> float))
         |> Seq.sumBy int
 
