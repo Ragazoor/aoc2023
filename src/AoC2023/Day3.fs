@@ -7,49 +7,51 @@ open System
 // Assuming no two identical numbers are neighbours to same symbol
 module Day3 =
     // If a number spans the coordinates (x,y) to (x+1,y) then the number exists on both keys of the map
-    type Numbers = Map<int * int, int>
-    type Symbols = Map<int * int, string>
+    type Coordinate = int * int
+    type Numbers = Map<Coordinate, int>
+    type Symbols = Map<Coordinate, string>
 
     type Schematic = { numbers: Numbers; symbols: Symbols }
 
     let private numberRegex = Text.RegularExpressions.Regex(@"\d+")
     let private symbolRegex = Text.RegularExpressions.Regex(@"[^\d\.]")
 
+    let private getNumbers y line =
+        numberRegex.Matches(line)
+        |> Seq.map (fun m -> m.Index, int m.Value)
+        |> Seq.map (fun (x, n) ->
+            let len = Math.Log10 n |> int |> (+) 1
+            Seq.init len (fun i -> (x + i, y), n))
+        |> Seq.concat
+        |> Map.ofSeq
+
+    let private getSymbols y line =
+        symbolRegex.Matches(line)
+        |> Seq.map (fun m -> m.Index, m.Value)
+        |> Seq.map (fun (x, s) -> (x, y), s)
+        |> Map.ofSeq
+
     let parseSchematic (input: string list) : Schematic =
         input
         |> Seq.mapi (fun y line ->
-            let numbers: Map<int * int, int> =
-                numberRegex.Matches(line)
-                |> Seq.map (fun m -> m.Index, int m.Value)
-                |> Seq.map (fun (x, n) ->
-                    let len = Math.Log10 n |> int |> (+) 1
-                    Seq.init len (fun i -> (x + i, y), n))
-                |> Seq.concat
-                |> Map.ofSeq
-
-            let symbols =
-                symbolRegex.Matches(line)
-                |> Seq.map (fun m -> m.Index, m.Value)
-                |> Seq.map (fun (x, s) -> (x, y), s)
-                |> Map.ofSeq
-
+            let numbers = getNumbers y line
+            let symbols = getSymbols y line
             { numbers = numbers; symbols = symbols })
         |> Seq.reduce (fun acc s ->
-            { numbers = Map.fold (fun acc k v -> Map.add k v acc) acc.numbers s.numbers
-              symbols = Map.fold (fun acc k v -> Map.add k v acc) acc.symbols s.symbols })
+            { numbers = mergeMap acc.numbers s.numbers
+              symbols = mergeMap acc.symbols s.symbols })
 
     let private getNeighbourNumbers (numbers: Numbers) (x, y) =
-        [ numbers.TryFind(x - 1, y - 1)
-          numbers.TryFind(x - 1, y)
-          numbers.TryFind(x - 1, y + 1)
-          numbers.TryFind(x, y - 1)
-          numbers.TryFind(x, y + 1)
-          numbers.TryFind(x + 1, y - 1)
-          numbers.TryFind(x + 1, y)
-          numbers.TryFind(x + 1, y + 1) ]
-        |> List.choose id
-        |> Set.ofList
-        |> List.ofSeq
+        Seq.init 3 (fun i ->
+            Seq.init 3 (fun j ->
+                if i = 1 && j = 1 then
+                    None
+                else
+                    numbers.TryFind(x + i - 1, y + j - 1)))
+        |> Seq.concat
+        |> Seq.choose id
+        |> Set.ofSeq
+        |> Set.toList
 
     let part1 input =
         input

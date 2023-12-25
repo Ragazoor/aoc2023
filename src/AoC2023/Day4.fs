@@ -63,16 +63,13 @@ module Day4 =
                     |> Map.ofSeq
 
                 mergeMap acc currentCardWinnings
-                |> Map.add cardId (numCurrentCard))
+                |> Map.add cardId numCurrentCard)
             Map.empty
 
     let part2 input =
         input
         |> Seq.map parseCard
         |> getNumScratchCards
-        |> Map.map (fun k v ->
-            printfn "%d: %d" k v
-            v)
         |> Map.values
         |> Seq.sum
 
