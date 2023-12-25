@@ -1,23 +1,22 @@
 ﻿namespace AoC2023
 
 open AoC2023.Common
+open System
 
 // For more information see https://aka.ms/fsharp-console-apps
 module Program =
     let private getInput day =
         let exePath =
-            System
-                .Reflection
+            Reflection
                 .Assembly
                 .GetExecutingAssembly()
                 .Location
 
-        let appDir = System.IO.Path.GetDirectoryName(exePath)
+        let appDir = IO.Path.GetDirectoryName(exePath)
 
-        let inputPath = System.IO.Path.Combine(appDir, $"../../../input/day%d{day}.txt")
+        let inputPath = IO.Path.Combine(appDir, $"../../../input/day%d{day}.txt")
 
-        System.IO.File.ReadAllLines(inputPath)
-        |> Seq.toList
+        IO.File.ReadAllLines(inputPath) |> Seq.toList
 
 
     let printResult day input =
@@ -28,7 +27,7 @@ module Program =
 
     [<EntryPoint>]
     let main args =
-        for day in 1..3 do
+        for day in 1..4 do
             printfn "Day %d" day
             let input = getInput day
 
@@ -36,6 +35,7 @@ module Program =
             | 1 -> printResult Day1.solver input
             | 2 -> printResult Day2.solver input
             | 3 -> printResult Day3.solver input
+            | 4 -> printResult Day4.solver input
             | _ -> printfn "Not implemented yet"
 
         0
